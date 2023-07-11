@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Docker" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="api" />
+    <target name="maven:3-eclipse-temurin-16" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.nimbleways.springboilerplate.Application" />
+    <option name="VM_PARAMETERS" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <envs>
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://spring-boilerplate_db_1:5432/db" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

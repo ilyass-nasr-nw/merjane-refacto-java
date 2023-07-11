@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db}
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME:user}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+
+  liquibase:
+    enabled: false
+
+springdoc:
+  api-docs:
+    enabled: ${ENABLE_SWAGGER:true}
+
+logging:
+  level:
+    root: INFO
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    info:
+      enabled: true
+  info:
+    defaults:
+      enabled: false
+    git:
+      enabled: true
+      mode: "full"
+    java:
+      enabled: true

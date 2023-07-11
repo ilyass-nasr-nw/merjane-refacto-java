@@ -1,0 +1,39 @@
+version: "3.1"
+
+services:
+  db:
+    image: postgres:14.0
+    restart: always
+    environment:
+      POSTGRES_DB: "$POSTGRE_DATABASE_NAME"
+      POSTGRES_USER: "$POSTGRE_USER"
+      POSTGRES_PASSWORD: "$POSTGRE_PASSWORD"
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - $POSTGRE_PUBLIC_PORT:$POSTGRE_PRIVATE_PORT
+    networks:
+      - backend
+
+  app:
+    depends_on:
+      - db
+    build: ./api
+    ports:
+      - $SPRING_PUBLIC_PORT:$SPRING_PRIVATE_PORT
+    networks:
+      - backend
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:postgresql://db:$POSTGRE_PRIVATE_PORT/$POSTGRE_DATABASE_NAME?useSSL=false",
+        "spring.datasource.username" : "$POSTGRE_USER",
+        "spring.datasource.password" : "$POSTGRE_PASSWORD",
+        "spring.liquibase.enabled": true,
+        "spring.liquibase.change-log": "classpath:db/changelog-master.yaml"
+      }'
+
+volumes:
+  db_data:
+
+networks:
+  backend:
