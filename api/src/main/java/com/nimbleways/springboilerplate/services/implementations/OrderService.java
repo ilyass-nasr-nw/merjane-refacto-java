@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 
@@ -19,48 +16,25 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrderService {
     private final ProductService productService;
-    private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
     public ProcessOrderResponse processOrder(@PathVariable Long orderId) {
         Order order = orderRepository.findById(orderId).get();
         System.out.println(order);
-        List<Long> ids = new ArrayList<>();
-        ids.add(orderId);
         Set<Product> products = order.getItems();
-        for (Product p : products) {
-            switch (p.getType()) {
+        for (Product product : products) {
+            switch (product.getType()) {
                 case NORMAL:
-                    if (p.getAvailable() > 0) {
-                        p.setAvailable(p.getAvailable() - 1);
-                        productRepository.save(p);
-                    } else {
-                        int leadTime = p.getLeadTime();
-                        if (leadTime > 0) {
-                            productService.notifyDelay(leadTime, p);
-                        }
-                    }
+                    productService.handleNormalProduct(product);
                     break;
                 case SEASONAL:
-                    // Add new season rules
-                    if ((LocalDate.now().isAfter(p.getSeasonStartDate()) && LocalDate.now().isBefore(p.getSeasonEndDate())
-                            && p.getAvailable() > 0)) {
-                        p.setAvailable(p.getAvailable() - 1);
-                        productRepository.save(p);
-                    } else {
-                        productService.handleSeasonalProduct(p);
-                    }
+                    productService.handleSeasonalProduct(product);
                     break;
                 case EXPIRABLE:
-                    if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
-                        p.setAvailable(p.getAvailable() - 1);
-                        productRepository.save(p);
-                    } else {
-                        productService.handleExpiredProduct(p);
-                    }
+                    productService.handleExpiredProduct(product);
                     break;
                 case FLASHSALE:
-                    productService.handleFlashSaleProduct(p);
+                    productService.handleFlashSaleProduct(product);
             }
         }
 
