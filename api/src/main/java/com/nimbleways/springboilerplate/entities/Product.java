@@ -38,4 +38,10 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
+    @Column(name = "flashsale_end_date")
+    private LocalDate flashSaleEndDate;
+
+    @Column(name = "flashsale_available")
+    private Integer flashSalesAvailable;
 }

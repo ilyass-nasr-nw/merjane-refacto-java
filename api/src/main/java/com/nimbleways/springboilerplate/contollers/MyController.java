@@ -67,6 +67,8 @@ public class MyController {
                 } else {
                     ps.handleExpiredProduct(p);
                 }
+            } else if (p.getType().equals("FLASHSALE")) {
+                ps.handleFlashSaleProduct(p);
             }
         }
 

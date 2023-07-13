@@ -47,4 +47,14 @@ public class ProductService {
             pr.save(p);
         }
     }
+
+    public void handleFlashSaleProduct(Product p) {
+        if(p.getAvailable() >0 &&  p.getFlashSalesAvailable() > 0 &&  p.getFlashSaleEndDate().isAfter(LocalDate.now())) {
+            p.setAvailable(p.getAvailable() - 1);
+            p.setFlashSalesAvailable(p.getFlashSalesAvailable() - 1);
+            pr.save(p);
+        } else {
+            ns.sendOutOfStockNotification(p.getName());
+        }
+    }
 }
