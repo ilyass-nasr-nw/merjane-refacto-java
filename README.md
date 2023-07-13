@@ -19,7 +19,7 @@ Mais d'abord, laissez-moi vous présenter notre système :
 Jusqu'ici, tout va bien. Mais voici où ça se corse :
 
 - Les produits "NORMAL" ne présentent aucune particularité. Lorsqu'ils sont en rupture de stock, un délai est simplement annoncé aux clients.
-- Les produits "SEASONAL" ne sont disponibles qu'à certaines périodes de l'année. Lorsqu'ils sont en rupture de stock, si le produit peut être sourcé en cinq jours ou moins, la commande passe, sinon un délai est annoncé aux clients, mais si ce délai dépasse la saison de disponibilité (30 jours), le produit est considéré comme non disponible.
+- Les produits "SEASONAL" ne sont disponibles qu'à certaines périodes de l'année. Lorsqu'ils sont en rupture de stock, un délai est annoncé aux clients, mais si ce délai dépasse la saison de disponibilité, le produit est considéré comme non disponible. Quand le produit est considéré comme non disponible, les client sont notifiés de cette indisponibilité. 
 - Les produits "EXPIRABLE" ont une date d'expiration. Ils peuvent être vendus normalement tant qu'ils n'ont pas expiré, mais ne sont plus disponibles une fois la date d'expiration passée.
 - Les produits "FLASHSALE" sont des produits en vente flash. Ils sont disponibles pour une période de temps très limitée et ont une quantité maximale d'articles pouvant être vendus. Une fois la période de vente flash terminée ou le nombre maximal d'articles vendus, ils ne sont plus disponibles.
 
