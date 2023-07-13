@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="customruleset">
+    <description>
+        This ruleset is a start to discover PMD best practices
+    </description>
+    <!-- This rule set enforces best practices for java,
+		official PMD site recommends to start by fixing errors
+		related to this rule set -->
+</ruleset>
