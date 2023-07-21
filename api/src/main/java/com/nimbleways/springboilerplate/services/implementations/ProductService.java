@@ -18,7 +18,6 @@ public class ProductService {
     NotificationService ns;
 
     public void notifyDelay(int leadTime, Product p) {
-        // Directly altering the product entity and saving it
         p.setLeadTime(leadTime);
         pr.save(p);
         ns.sendDelayNotification(leadTime, p.getName());
@@ -41,7 +40,7 @@ public class ProductService {
         if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
             p.setAvailable(p.getAvailable() - 1);
             pr.save(p);
-        } else { // only if available, add a condition to check availability
+        } else {
             ns.sendExpirationNotification(p.getName(), p.getExpiryDate());
             p.setAvailable(0);
             pr.save(p);

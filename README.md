@@ -1,4 +1,4 @@
-## **Énoncé**
+# **Énoncé**
 
 Bonjour et bienvenue dans l'équipe de Merjane, le leader de la vente en ligne à Aïn Sebaâ.
 
@@ -24,3 +24,13 @@ Jusqu'ici, tout va bien. Mais voici où ça se corse :
 - Les produits "FLASHSALE" sont des produits en vente flash. Ils sont disponibles pour une période de temps très limitée et ont une quantité maximale d'articles pouvant être vendus. Une fois la période de vente flash terminée ou le nombre maximal d'articles vendus, ils ne sont plus disponibles.
 
 Votre tâche est d'ajouter le nouveau type de produits "FLASHSALE" à notre système, en prenant en compte les particularités de sa disponibilité. Vous devrez également faire en sorte que l'ensemble du code soit facilement compréhensible et maintenable pour le prochain développeur qui travaillera sur ce projet.
+
+
+### Consignes: 
+* Ignorez les migrations BDD
+* Ne pas modifier les classes qui ont un commentaire: `// WARN: Should not be changed during the exercise
+`
+* Pour lancer les tests:
+  * unitaires: `mvnw test`
+  * integration: `mvnw integration-test`
+  * tous: `mvnw verify`

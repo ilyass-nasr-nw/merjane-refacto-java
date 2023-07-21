@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+// WARN: Should not be changed during the exercise
 @Entity
 @Getter
 @Setter
