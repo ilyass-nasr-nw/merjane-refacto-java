@@ -35,7 +35,7 @@ import java.util.*;
 @SetupDatabase
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MyControllerIntegrationTests {
+public class OrderControllerIntegrationTests {
         @Autowired
         private MockMvc mockMvc;
 
