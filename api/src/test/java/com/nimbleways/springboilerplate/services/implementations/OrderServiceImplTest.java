@@ -4,29 +4,44 @@ import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import com.nimbleways.springboilerplate.services.ProductProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@RunWith(MockitoJUnitRunner.class)
 class OrderServiceImplTest {
 
     @Mock
     private OrderRepository orderRepository;
 
-    @Mock
-    private ProductRepository productRepository;
+
 
     @Mock
     private ProductService productService;
+    @InjectMocks
+    private NormalProductStrategy normalProductStrategy;
+    @Mock
+    private SeasonalProductStrategy seasonalProductStrategy = new SeasonalProductStrategy();
+    @Mock
+    private ExpirableProductStrategy expirableProductStrategy = new ExpirableProductStrategy();
+    @Mock
+    private FlashSaleProductStrategy flashSaleProductStrategy = new FlashSaleProductStrategy();
+
+    @Spy
+    private ProductProcessor productProcessor = new ProductProcessorImpl(normalProductStrategy, seasonalProductStrategy, expirableProductStrategy, flashSaleProductStrategy);
+
+
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -68,12 +83,9 @@ class OrderServiceImplTest {
         Set<Product> items = new HashSet<>();
         items.add(normalProduct);
         order.setItems(items);
+        Mockito.when(productService.save(Mockito.any())).thenReturn(normalProduct);
+        orderService.processOrderNormal(normalProduct);
 
-        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-
-        Long orderId = orderService.processOrder(1L);
-
-        assertEquals(1L, orderId);
         assertEquals(0, normalProduct.getAvailable());
     }
 

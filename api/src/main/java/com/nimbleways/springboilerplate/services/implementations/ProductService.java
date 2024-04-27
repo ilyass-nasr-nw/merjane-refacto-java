@@ -12,25 +12,25 @@ import com.nimbleways.springboilerplate.repositories.ProductRepository;
 public class ProductService {
 
     @Autowired
-    ProductRepository pr;
+    ProductRepository productRepository;
 
     @Autowired
-    NotificationService ns;
+    NotificationService notificationService;
 
     public void notifyDelay(int leadTime, Product p) {
         p.setLeadTime(leadTime);
-        pr.save(p);
-        ns.sendDelayNotification(leadTime, p.getName());
+        productRepository.save(p);
+        notificationService.sendDelayNotification(leadTime, p.getName());
     }
 
     public void handleSeasonalProduct(Product p) {
         if (LocalDate.now().plusDays(p.getLeadTime()).isAfter(p.getSeasonEndDate())) {
-            ns.sendOutOfStockNotification(p.getName());
+            notificationService.sendOutOfStockNotification(p.getName());
             p.setAvailable(0);
-            pr.save(p);
+            productRepository.save(p);
         } else if (p.getSeasonStartDate().isAfter(LocalDate.now())) {
-            ns.sendOutOfStockNotification(p.getName());
-            pr.save(p);
+            notificationService.sendOutOfStockNotification(p.getName());
+            productRepository.save(p);
         } else {
             notifyDelay(p.getLeadTime(), p);
         }
@@ -39,11 +39,20 @@ public class ProductService {
     public void handleExpiredProduct(Product p) {
         if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
             p.setAvailable(p.getAvailable() - 1);
-            pr.save(p);
+            productRepository.save(p);
         } else {
-            ns.sendExpirationNotification(p.getName(), p.getExpiryDate());
+            notificationService.sendExpirationNotification(p.getName(), p.getExpiryDate());
             p.setAvailable(0);
-            pr.save(p);
+            productRepository.save(p);
         }
+    }
+
+    public Product findById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
+
+    public Product save(Product product) {
+        return productRepository.save(product);
     }
 }

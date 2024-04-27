@@ -5,6 +5,7 @@ import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.OrderService;
+import com.nimbleways.springboilerplate.services.ProductProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,10 @@ public class OrderServiceImpl implements OrderService {
     private ProductService productService;
 
     @Autowired
-    private ProductRepository productRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private ProductProcessor productProcessor;
 
 
     /**
@@ -44,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
         Set<Product> products = order.get().getItems();
         for (Product p : products) {
             if (p.getType().equals("NORMAL")) {
-                processOrderNorma(p);
+                processOrderNormal(p);
             } else if (p.getType().equals("SEASONAL")) {
                 processOrderSeasonal(p);
             } else if (p.getType().equals("EXPIRABLE")) {
@@ -65,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
     private void processOrderExpirable(Product p) {
         if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
             p.setAvailable(p.getAvailable() - 1);
-            productRepository.save(p);
+            productService.save(p);
         } else {
             productService.handleExpiredProduct(p);
         }
@@ -76,21 +77,13 @@ public class OrderServiceImpl implements OrderService {
         if ((LocalDate.now().isAfter(p.getSeasonStartDate()) && LocalDate.now().isBefore(p.getSeasonEndDate())
                 && p.getAvailable() > 0)) {
             p.setAvailable(p.getAvailable() - 1);
-            productRepository.save(p);
+            productService.save(p);
         } else {
             productService.handleSeasonalProduct(p);
         }
     }
 
-    private void processOrderNorma(Product p) {
-        if (p.getAvailable() > 0) {
-            p.setAvailable(p.getAvailable() - 1);
-            productRepository.save(p);
-        } else {
-            int leadTime = p.getLeadTime();
-            if (leadTime > 0) {
-                productService.notifyDelay(leadTime, p);
-            }
-        }
+    public void processOrderNormal(Product p) {
+        productProcessor.processOrder(p);
     }
 }
