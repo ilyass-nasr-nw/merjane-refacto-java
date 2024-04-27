@@ -4,14 +4,20 @@ import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import com.nimbleways.springboilerplate.services.OrderService;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
+import com.nimbleways.springboilerplate.services.implementations.ProductService;
 import com.nimbleways.springboilerplate.utils.Annotations.SetupDatabase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockserver.model.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,10 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 // Specify the controller class you want to test
 // This indicates to spring boot to only load UsersController into the context
@@ -45,6 +48,9 @@ public class MyControllerIntegrationTests {
         @Autowired
         private ProductRepository productRepository;
 
+        @Autowired
+        private ProductService productService;
+
         @Test
         public void processOrderShouldReturn() throws Exception {
                 List<Product> allProducts = createProducts();
@@ -58,6 +64,7 @@ public class MyControllerIntegrationTests {
                 Order resultOrder = orderRepository.findById(order.getId()).get();
                 assertEquals(resultOrder.getId(), order.getId());
         }
+
 
         private static Order createOrder(Set<Product> products) {
                 Order order = new Order();

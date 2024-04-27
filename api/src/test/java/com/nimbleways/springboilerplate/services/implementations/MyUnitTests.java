@@ -39,5 +39,6 @@ public class MyUnitTests {
         assertEquals(15, product.getLeadTime());
         Mockito.verify(productRepository, Mockito.times(1)).save(product);
         Mockito.verify(notificationService, Mockito.times(1)).sendDelayNotification(product.getLeadTime(), product.getName());
+
     }
 }
