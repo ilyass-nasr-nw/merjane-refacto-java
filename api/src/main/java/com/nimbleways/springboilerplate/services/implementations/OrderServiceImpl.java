@@ -26,6 +26,11 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
 
+    /**
+     * @param orderId Order Id
+     * Process the order and update the product availability
+     * @return Order Id
+     */
     @Override
     public Long processOrder(Long orderId) {
         Optional<Order> order = orderRepository.findById(orderId);

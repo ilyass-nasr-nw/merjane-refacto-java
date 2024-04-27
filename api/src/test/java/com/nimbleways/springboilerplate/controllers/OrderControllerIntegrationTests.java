@@ -36,6 +36,9 @@ import java.util.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class OrderControllerIntegrationTests {
+
+        // TODO Implement more test cases for the OrderController to insure safe refactoring
+
         @Autowired
         private MockMvc mockMvc;
 
