@@ -139,7 +139,25 @@ class OrderServiceImplTest {
         Mockito.verify(productService, Mockito.times(1)).handleExpiredProduct(expirableProduct);
     }
 
+    // FLASHSALE product is available
+    @Test
+    public void testProcessOrder_FlashSaleProductAvailable() {
+        Product flashSaleProduct = new Product();
+        flashSaleProduct.setId(4L);
+        flashSaleProduct.setType("FLASHSALE");
+        flashSaleProduct.setAvailable(1);
 
+        Set<Product> items = new HashSet<>();
+        items.add(flashSaleProduct);
+        order.setItems(items);
+
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        Long orderId = orderService.processOrder(1L);
+
+        assertEquals(1L, orderId);
+        assertEquals(0, flashSaleProduct.getAvailable());
+    }
 
 
 
