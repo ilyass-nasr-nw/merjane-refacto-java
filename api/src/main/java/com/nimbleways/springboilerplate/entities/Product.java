@@ -22,7 +22,7 @@ public class Product {
     private Integer leadTime;
 
     @Column(name = "available")
-    private Integer available;
+    protected Integer available;
 
     @Column(name = "type")
     private String type;
@@ -38,4 +38,8 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
+    // processOrder method abstract
+    public void processOrder() {
+    }
 }

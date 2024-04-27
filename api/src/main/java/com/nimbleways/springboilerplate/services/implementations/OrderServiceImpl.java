@@ -44,35 +44,53 @@ public class OrderServiceImpl implements OrderService {
         Set<Product> products = order.get().getItems();
         for (Product p : products) {
             if (p.getType().equals("NORMAL")) {
-                if (p.getAvailable() > 0) {
-                    p.setAvailable(p.getAvailable() - 1);
-                    productRepository.save(p);
-                } else {
-                    int leadTime = p.getLeadTime();
-                    if (leadTime > 0) {
-                        productService.notifyDelay(leadTime, p);
-                    }
-                }
+                processOrderNorma(p);
             } else if (p.getType().equals("SEASONAL")) {
-                // Add new season rules
-                if ((LocalDate.now().isAfter(p.getSeasonStartDate()) && LocalDate.now().isBefore(p.getSeasonEndDate())
-                        && p.getAvailable() > 0)) {
-                    p.setAvailable(p.getAvailable() - 1);
-                    productRepository.save(p);
-                } else {
-                    productService.handleSeasonalProduct(p);
-                }
+                processOrderSeasonal(p);
             } else if (p.getType().equals("EXPIRABLE")) {
-                if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
-                    p.setAvailable(p.getAvailable() - 1);
-                    productRepository.save(p);
-                } else {
-                    productService.handleExpiredProduct(p);
-                }
+                processOrderExpirable(p);
+            } else if (p.getType().equals("FLASH_SALE")) {
+                processOrderFlashSale(p);
             }
         }
 
 
         return order.get().getId();
+    }
+
+    private void processOrderFlashSale(Product p) {
+        throw new RuntimeException("Method not implemented yet");
+    }
+
+    private void processOrderExpirable(Product p) {
+        if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
+            p.setAvailable(p.getAvailable() - 1);
+            productRepository.save(p);
+        } else {
+            productService.handleExpiredProduct(p);
+        }
+    }
+
+    private void processOrderSeasonal(Product p) {
+        // Add new season rules
+        if ((LocalDate.now().isAfter(p.getSeasonStartDate()) && LocalDate.now().isBefore(p.getSeasonEndDate())
+                && p.getAvailable() > 0)) {
+            p.setAvailable(p.getAvailable() - 1);
+            productRepository.save(p);
+        } else {
+            productService.handleSeasonalProduct(p);
+        }
+    }
+
+    private void processOrderNorma(Product p) {
+        if (p.getAvailable() > 0) {
+            p.setAvailable(p.getAvailable() - 1);
+            productRepository.save(p);
+        } else {
+            int leadTime = p.getLeadTime();
+            if (leadTime > 0) {
+                productService.notifyDelay(leadTime, p);
+            }
+        }
     }
 }
