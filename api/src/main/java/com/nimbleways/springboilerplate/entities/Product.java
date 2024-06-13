@@ -1,5 +1,6 @@
 package com.nimbleways.springboilerplate.entities;
 
+import com.nimbleways.springboilerplate.enums.ProductType;
 import lombok.*;
 
 import java.time.LocalDate;
