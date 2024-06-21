@@ -5,7 +5,6 @@ import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
-import com.nimbleways.springboilerplate.utils.Annotations.SetupDatabase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +28,6 @@ import java.util.Set;
 // Specify the controller class you want to test
 // This indicates to spring boot to only load UsersController into the context
 // Which allows a better performance and needs to do less mocks
-@SetupDatabase
 @SpringBootTest
 @AutoConfigureMockMvc
 public class MyControllerIntegrationTests {
