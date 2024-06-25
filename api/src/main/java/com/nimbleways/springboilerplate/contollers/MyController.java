@@ -67,6 +67,16 @@ public class MyController {
                 } else {
                     ps.handleExpiredProduct(p);
                 }
+            }else if (p.getType().equals("FLASHSALE")) {
+                //Here i used the expiry date just to gain time i can add a field in db as number of days
+                // in that way we can just add the number of days to the current date and then store it in expiry date
+                //that way we can always get expiry date based on number of dates we choosed for limitting
+                if (LocalDate.now().isBefore(p.getExpiryDate()) && p.getFlashsaleMaxQuantity()> 0) {
+                    p.setAvailable(p.getAvailable() - 1);
+                    pr.save(p);
+                } else {
+                    ps.handleFlashSaleProduct(p);
+                }
             }
         }
 

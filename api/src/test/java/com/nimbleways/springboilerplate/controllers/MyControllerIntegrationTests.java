@@ -5,7 +5,6 @@ import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
-import com.nimbleways.springboilerplate.utils.Annotations.SetupDatabase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +28,6 @@ import java.util.Set;
 // Specify the controller class you want to test
 // This indicates to spring boot to only load UsersController into the context
 // Which allows a better performance and needs to do less mocks
-@SetupDatabase
 @SpringBootTest
 @AutoConfigureMockMvc
 public class MyControllerIntegrationTests {
@@ -67,15 +65,16 @@ public class MyControllerIntegrationTests {
 
         private static List<Product> createProducts() {
                 List<Product> products = new ArrayList<>();
-                products.add(new Product(null, 15, 30, "NORMAL", "USB Cable", null, null, null));
-                products.add(new Product(null, 10, 0, "NORMAL", "USB Dongle", null, null, null));
+                products.add(new Product(null, 15, 30, "NORMAL", "USB Cable", null, null, null,0));
+                products.add(new Product(null, 10, 0, "NORMAL", "USB Dongle", null, null, null,0));
                 products.add(new Product(null, 15, 30, "EXPIRABLE", "Butter", LocalDate.now().plusDays(26), null,
-                                null));
-                products.add(new Product(null, 90, 6, "EXPIRABLE", "Milk", LocalDate.now().minusDays(2), null, null));
+                                null,0));
+                products.add(new Product(null, 90, 6, "EXPIRABLE", "Milk", LocalDate.now().minusDays(2), null, null,0));
                 products.add(new Product(null, 15, 30, "SEASONAL", "Watermelon", null, LocalDate.now().minusDays(2),
-                                LocalDate.now().plusDays(58)));
+                                LocalDate.now().plusDays(58),0));
                 products.add(new Product(null, 15, 30, "SEASONAL", "Grapes", null, LocalDate.now().plusDays(180),
-                                LocalDate.now().plusDays(240)));
+                                LocalDate.now().plusDays(240),0));
+                products.add(new Product(null, 15, 30, "FLASHSALE", "something", LocalDate.now().plusDays(2), null, null,10));
                 return products;
         }
 }

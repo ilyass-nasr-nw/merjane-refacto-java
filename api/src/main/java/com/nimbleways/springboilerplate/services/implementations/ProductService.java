@@ -46,4 +46,14 @@ public class ProductService {
             pr.save(p);
         }
     }
+
+    public void handleFlashSaleProduct(Product p) {
+        // Add logic for handling FLASHSALE products
+        if (p.getAvailable() > 0) {
+            p.setAvailable(p.getAvailable() - 1);
+            pr.save(p);
+        } else {
+            ns.sendOutOfStockNotification(p.getName());
+        }
+    }
 }
