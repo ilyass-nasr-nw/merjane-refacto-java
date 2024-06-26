@@ -8,12 +8,11 @@ import java.time.LocalDate;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
-public class Product {
+public abstract class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -32,22 +31,8 @@ public class Product {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "expiry_date")
-    private LocalDate expiryDate;
 
-    @Column(name = "season_start_date")
-    private LocalDate seasonStartDate;
-
-    @Column(name = "season_end_date")
-    private LocalDate seasonEndDate;
-
-    // Fields for FLASHSALE products
-    @Column(name = "flash_sale_start_date")
-    private LocalDate flashSaleStartDate;
-
-    @Column(name = "flash_sale_end_date")
-    private LocalDate flashSaleEndDate;
-
-    @Column(name = "max_quantity")
-    private Integer maxQuantity;
+    // Abstract method to be implemented by subclasses for specific processing logic
+    public abstract void process();
 }
+

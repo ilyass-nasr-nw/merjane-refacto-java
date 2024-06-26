@@ -2,10 +2,10 @@ package com.nimbleways.springboilerplate.services.implementations;
 
 import java.time.LocalDate;
 
+import com.nimbleways.springboilerplate.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 
 @Service
@@ -26,72 +26,58 @@ public class ProductService {
     public void processProduct(Product p) {
         switch (p.getType()) {
             case NORMAL:
-                handleNormalProduct(p);
+                handleNormalProduct((NormalProduct) p);
                 break;
             case SEASONAL:
-                handleSeasonalProduct(p);
+                handleSeasonalProduct((SeasonalProduct) p);
                 break;
             case EXPIRABLE:
-                handleExpirableProduct(p);
+                handleExpirableProduct((ExpirableProduct) p);
                 break;
             case FLASHSALE:
-                handleFlashSaleProduct(p);
+                handleFlashSaleProduct((FlashSaleProduct) p);
                 break;
         }
     }
 
-    private void handleNormalProduct(Product p) {
-        if (p.getAvailable() > 0) {
-            p.setAvailable(p.getAvailable() - 1);
-            pr.save(p);
-        } else if (p.getLeadTime() > 0) {
-            notifyDelay(p.getLeadTime(), p);
+    private void handleNormalProduct(NormalProduct np) {
+        np.process();
+        if (np.getLeadTime() > 0) {
+            notifyDelay(np.getLeadTime(), np);
         }
+        pr.save(np);
     }
 
-    private void handleSeasonalProduct(Product p) {
+    private void handleSeasonalProduct(SeasonalProduct sp) {
+        sp.process();
         LocalDate now = LocalDate.now();
-        if (now.isAfter(p.getSeasonStartDate()) && now.isBefore(p.getSeasonEndDate()) && p.getAvailable() > 0) {
-            p.setAvailable(p.getAvailable() - 1);
-            pr.save(p);
+        if (now.plusDays(sp.getLeadTime()).isAfter(sp.getSeasonEndDate())
+                || sp.getSeasonStartDate().isAfter(LocalDate.now())) {
+            ns.sendOutOfStockNotification(sp.getName());
         } else {
-            if (now.plusDays(p.getLeadTime()).isAfter(p.getSeasonEndDate())) {
-                ns.sendOutOfStockNotification(p.getName());
-                p.setAvailable(0);
-                pr.save(p);
-            } else if (p.getSeasonStartDate().isAfter(LocalDate.now())) {
-                ns.sendOutOfStockNotification(p.getName());
-                pr.save(p);
-            } else {
-                notifyDelay(p.getLeadTime(), p);
-            }
+            notifyDelay(sp.getLeadTime(), sp);
         }
+        pr.save(sp);
     }
 
-    private void handleExpirableProduct(Product p) {
-        if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
-            p.setAvailable(p.getAvailable() - 1);
-        } else if (p.getExpiryDate().isAfter(LocalDate.now())){
-            ns.sendExpirationNotification(p.getName(), p.getExpiryDate());
-            p.setAvailable(0);
+    private void handleExpirableProduct(ExpirableProduct ep) {
+        ep.process();
+        if (ep.getExpiryDate().isAfter(LocalDate.now())){
+            ns.sendExpirationNotification(ep.getName(), ep.getExpiryDate());
         } else {
-            ns.sendOutOfStockNotification(p.getName());
+            ns.sendOutOfStockNotification(ep.getName());
         }
-        pr.save(p);
+        pr.save(ep);
     }
 
-    private void handleFlashSaleProduct(Product p) {
+    private void handleFlashSaleProduct(FlashSaleProduct fsp) {
+        fsp.process();
         LocalDate now = LocalDate.now();
-        if (now.isAfter(p.getFlashSaleStartDate()) && now.isBefore(p.getFlashSaleEndDate()) && p.getAvailable() > 0 && p.getMaxQuantity() > 0) {
-            p.setAvailable(p.getAvailable() - 1);
-            p.setMaxQuantity(p.getMaxQuantity() - 1);
-        } else if (now.isAfter(p.getFlashSaleEndDate())) {
-            ns.sendExpirationNotification(p.getName(), p.getFlashSaleEndDate());
-            p.setAvailable(0);
-        } else if (p.getMaxQuantity() == 0) {
-            ns.sendOutOfStockNotification(p.getName());
-            p.setAvailable(0);
+        if (now.isAfter(fsp.getFlashSaleEndDate())) {
+            ns.sendExpirationNotification(fsp.getName(), fsp.getFlashSaleEndDate());
+        } else if (fsp.getMaxQuantity() == 0) {
+            ns.sendOutOfStockNotification(fsp.getName());
         }
-        pr.save(p);
+        pr.save(fsp);
     }
 }
