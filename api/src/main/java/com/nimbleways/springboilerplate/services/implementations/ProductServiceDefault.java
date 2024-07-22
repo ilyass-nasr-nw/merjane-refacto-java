@@ -53,4 +53,26 @@ public class ProductServiceDefault implements ProductService {
             productRepository.save(product);
         }
     }
+
+	@Override
+	public void handleFlashableProduct(final Product product) {
+		LocalDate now = LocalDate.now();
+
+		if (now.isAfter(product.getFlashStartDate()) && now.isBefore(product.getFlashEndDate())) {
+		    if (product.getAvailable() > 0 && product.getMaxQuantity() > 0) {
+		    	product.setAvailable(product.getAvailable() - 1);
+		    	product.setMaxQuantity(product.getMaxQuantity() - 1);
+		    } else {
+		        notificationService.sendOutOfStockNotification(product.getName());
+		        product.setAvailable(0);
+		    }
+		} else if (now.isAfter(product.getFlashEndDate())) {
+		    notificationService.sendExpirationNotification(product.getName(), product.getFlashEndDate());
+		    product.setAvailable(0);
+		}
+
+		productRepository.save(product);
+	}
+    
+    
 }

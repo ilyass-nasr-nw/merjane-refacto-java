@@ -9,4 +9,5 @@ public interface ProductService {
 	public void notifyDelay(int leadTime, Product product);
     public void handleSeasonalProduct(Product product);
     public void handleExpiredProduct(Product product);
+    public void handleFlashableProduct(Product product);
 }

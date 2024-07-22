@@ -6,6 +6,8 @@ import java.time.LocalDate;
 
 import javax.persistence.*;
 
+import com.nimbleways.springboilerplate.enums.ProductType;
+
 @Entity
 @Getter
 @Setter
@@ -25,7 +27,7 @@ public class Product {
     private Integer available;
 
     @Column(name = "type")
-    private String type;
+    private ProductType type; // Change it to Enum
 
     @Column(name = "name")
     private String name;
@@ -38,4 +40,14 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+    
+    // New Properties for the Flashable Type
+    @Column(name = "flash_start_date")
+    private LocalDate flashStartDate;
+
+    @Column(name = "flash_end_date")
+    private LocalDate flashEndDate;
+
+    @Column(name = "max_quantity")
+    private Integer maxQuantity;
 }
