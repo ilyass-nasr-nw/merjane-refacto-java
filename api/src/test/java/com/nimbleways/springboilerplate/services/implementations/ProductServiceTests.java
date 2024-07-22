@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @UnitTest
-public class MyUnitTests {
+public class ProductServiceTests {
 
     @Mock
     private NotificationService notificationService;
