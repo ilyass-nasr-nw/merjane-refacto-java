@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @UnitTest
-public class MyUnitTests {
+public class ProductServiceUnitTests {
 
     @Mock
     private NotificationService notificationService;
@@ -25,9 +25,16 @@ public class MyUnitTests {
     private ProductService productService;
 
     @Test
-    public void test() {
+    void notifyDelayShouldSendDelayNotification() {
         // GIVEN
-        Product product =new Product(null, 15, 0, "NORMAL", "RJ45 Cable", null, null, null);
+        Product product = Product.builder()
+                                .id(1L)
+                                .leadTime(15)
+                                .available(0)
+                                .type("NORMAL")
+                                .name("RJ45 Cable")
+                                .build();
+
 
         Mockito.when(productRepository.save(product)).thenReturn(product);
 

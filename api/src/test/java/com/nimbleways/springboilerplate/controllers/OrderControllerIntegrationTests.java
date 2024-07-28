@@ -30,7 +30,7 @@ import java.util.Set;
 // Which allows a better performance and needs to do less mocks
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MyControllerIntegrationTests {
+public class OrderControllerIntegrationTests {
         @Autowired
         private MockMvc mockMvc;
 
