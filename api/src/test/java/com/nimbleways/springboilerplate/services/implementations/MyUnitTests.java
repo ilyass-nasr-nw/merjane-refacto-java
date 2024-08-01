@@ -1,9 +1,17 @@
 package com.nimbleways.springboilerplate.services.implementations;
 
+import com.nimbleways.springboilerplate.businessservice.IOrderBusinessService;
+import com.nimbleways.springboilerplate.businessservice.IProductBusinessService;
+import com.nimbleways.springboilerplate.dto.ProcessOrder;
+import com.nimbleways.springboilerplate.dto.enums.ProductTypeEnum;
+import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import com.nimbleways.springboilerplate.services.IProductService;
 import com.nimbleways.springboilerplate.utils.Annotations.UnitTest;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,33 +19,47 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @UnitTest
 public class MyUnitTests {
 
+    IProductService productService;
+
     @Mock
-    private NotificationService notificationService;
+    IProductBusinessService productBusinessService;
+
     @Mock
-    private ProductRepository productRepository;
-    @InjectMocks 
-    private ProductService productService;
+    IOrderBusinessService orderBusinessService;
+
+    @Mock
+    NotificationService notificationService;
+
+    Product product;
+    ProcessOrder processOrder;
+    Order order;
+
+    @BeforeEach
+    public  void setUp(){
+        productService=new ProductService(productBusinessService,orderBusinessService,notificationService);
+        product=new Product(1L,0,120, ProductTypeEnum.NORMAL,"ABCD", null,null,null);
+        processOrder=new ProcessOrder(2L);
+        order=new Order(2L, Set.of(product));
+
+    }
 
     @Test
-    public void test() {
-        // GIVEN
-        Product product =new Product(null, 15, 0, "NORMAL", "RJ45 Cable", null, null, null);
+    void should_process_order_case_normal(){
+        when(orderBusinessService.findById(2L)).thenReturn(order);
 
-        Mockito.when(productRepository.save(product)).thenReturn(product);
+        var result=productService.processOrder(processOrder);
 
-        // WHEN
-        productService.notifyDelay(product.getLeadTime(), product);
-
-        // THEN
-        assertEquals(0, product.getAvailable());
-        assertEquals(15, product.getLeadTime());
-        Mockito.verify(productRepository, Mockito.times(1)).save(product);
-        Mockito.verify(notificationService, Mockito.times(1)).sendDelayNotification(product.getLeadTime(), product.getName());
+        Assertions.assertEquals(result.id(),2L);
+        Assertions.assertEquals(product.getAvailable(),119);
     }
+
 }
