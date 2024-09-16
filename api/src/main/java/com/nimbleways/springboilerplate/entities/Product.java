@@ -1,5 +1,6 @@
 package com.nimbleways.springboilerplate.entities;
 
+import com.nimbleways.springboilerplate.enums.ProductType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -7,8 +8,8 @@ import java.time.LocalDate;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
@@ -25,7 +26,7 @@ public class Product {
     private Integer available;
 
     @Column(name = "type")
-    private String type;
+    private ProductType type;
 
     @Column(name = "name")
     private String name;
@@ -38,4 +39,13 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
+
+    @Column(name = "flash_sale_start_date")
+    private LocalDate flashSaleStartDate;
+
+    @Column(name = "flash_sale_end_date")
+    private LocalDate flashSaleEndDate;
+
+
 }
