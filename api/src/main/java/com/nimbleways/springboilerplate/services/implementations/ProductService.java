@@ -2,10 +2,10 @@ package com.nimbleways.springboilerplate.services.implementations;
 
 import java.time.LocalDate;
 
+import com.nimbleways.springboilerplate.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 
 @Service
@@ -23,27 +23,61 @@ public class ProductService {
         ns.sendDelayNotification(leadTime, p.getName());
     }
 
-    public void handleSeasonalProduct(Product p) {
-        if (LocalDate.now().plusDays(p.getLeadTime()).isAfter(p.getSeasonEndDate())) {
-            ns.sendOutOfStockNotification(p.getName());
-            p.setAvailable(0);
-            pr.save(p);
-        } else if (p.getSeasonStartDate().isAfter(LocalDate.now())) {
-            ns.sendOutOfStockNotification(p.getName());
-            pr.save(p);
-        } else {
-            notifyDelay(p.getLeadTime(), p);
+    public void processProduct(Product p) {
+        switch (p.getType()) {
+            case NORMAL:
+                handleNormalProduct((NormalProduct) p);
+                break;
+            case SEASONAL:
+                handleSeasonalProduct((SeasonalProduct) p);
+                break;
+            case EXPIRABLE:
+                handleExpirableProduct((ExpirableProduct) p);
+                break;
+            case FLASHSALE:
+                handleFlashSaleProduct((FlashSaleProduct) p);
+                break;
         }
     }
 
-    public void handleExpiredProduct(Product p) {
-        if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
-            p.setAvailable(p.getAvailable() - 1);
-            pr.save(p);
-        } else {
-            ns.sendExpirationNotification(p.getName(), p.getExpiryDate());
-            p.setAvailable(0);
-            pr.save(p);
+    private void handleNormalProduct(NormalProduct np) {
+        np.process();
+        if (np.getLeadTime() > 0) {
+            notifyDelay(np.getLeadTime(), np);
         }
+        pr.save(np);
+    }
+
+    private void handleSeasonalProduct(SeasonalProduct sp) {
+        sp.process();
+        LocalDate now = LocalDate.now();
+        if (now.plusDays(sp.getLeadTime()).isAfter(sp.getSeasonEndDate())
+                || sp.getSeasonStartDate().isAfter(LocalDate.now())) {
+            ns.sendOutOfStockNotification(sp.getName());
+        } else {
+            notifyDelay(sp.getLeadTime(), sp);
+        }
+        pr.save(sp);
+    }
+
+    private void handleExpirableProduct(ExpirableProduct ep) {
+        ep.process();
+        if (ep.getExpiryDate().isAfter(LocalDate.now())){
+            ns.sendExpirationNotification(ep.getName(), ep.getExpiryDate());
+        } else {
+            ns.sendOutOfStockNotification(ep.getName());
+        }
+        pr.save(ep);
+    }
+
+    private void handleFlashSaleProduct(FlashSaleProduct fsp) {
+        fsp.process();
+        LocalDate now = LocalDate.now();
+        if (now.isAfter(fsp.getFlashSaleEndDate())) {
+            ns.sendExpirationNotification(fsp.getName(), fsp.getFlashSaleEndDate());
+        } else if (fsp.getMaxQuantity() == 0) {
+            ns.sendOutOfStockNotification(fsp.getName());
+        }
+        pr.save(fsp);
     }
 }

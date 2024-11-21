@@ -1,5 +1,6 @@
 package com.nimbleways.springboilerplate.entities;
 
+import com.nimbleways.springboilerplate.enums.ProductType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -7,12 +8,11 @@ import java.time.LocalDate;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
-public class Product {
+public abstract class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,18 +24,15 @@ public class Product {
     @Column(name = "available")
     private Integer available;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private String type;
+    private ProductType type;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "expiry_date")
-    private LocalDate expiryDate;
 
-    @Column(name = "season_start_date")
-    private LocalDate seasonStartDate;
-
-    @Column(name = "season_end_date")
-    private LocalDate seasonEndDate;
+    // Abstract method to be implemented by subclasses for specific processing logic
+    public abstract void process();
 }
+
