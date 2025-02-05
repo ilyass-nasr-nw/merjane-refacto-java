@@ -1,9 +1,7 @@
 package com.nimbleways.springboilerplate.services.implementations;
 
 import com.nimbleways.springboilerplate.entities.Product;
-import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.utils.Annotations.UnitTest;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,33 +9,35 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(SpringExtension.class)
 @UnitTest
-public class MyUnitTests {
+class ProductServiceTest {
 
     @Mock
     private NotificationService notificationService;
-    @Mock
-    private ProductRepository productRepository;
-    @InjectMocks 
-    private ProductService productService;
+
+    @InjectMocks
+    ProductService productService;
 
     @Test
-    public void test() {
+    void testNotifyDelay() {
         // GIVEN
-        Product product =new Product(null, 15, 0, "NORMAL", "RJ45 Cable", null, null, null);
-
-        Mockito.when(productRepository.save(product)).thenReturn(product);
+        Product product = new Product(null, 15, 0, "NORMAL", "RJ45 Cable", null, null, null);
+        List<Product> updatedProducts = new ArrayList<>();
+        doNothing().when(notificationService).sendDelayNotification(product.getLeadTime(), product.getName());
 
         // WHEN
-        productService.notifyDelay(product.getLeadTime(), product);
+        productService.notifyDelay(product.getLeadTime(), product, updatedProducts);
 
         // THEN
         assertEquals(0, product.getAvailable());
         assertEquals(15, product.getLeadTime());
-        Mockito.verify(productRepository, Mockito.times(1)).save(product);
         Mockito.verify(notificationService, Mockito.times(1)).sendDelayNotification(product.getLeadTime(), product.getName());
     }
 }

@@ -1,49 +1,46 @@
 package com.nimbleways.springboilerplate.services.implementations;
 
-import java.time.LocalDate;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nimbleways.springboilerplate.entities.Product;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import com.nimbleways.springboilerplate.entities.Product;
-import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    @Autowired
-    ProductRepository pr;
+    private final NotificationService notificationService;
 
-    @Autowired
-    NotificationService ns;
-
-    public void notifyDelay(int leadTime, Product p) {
-        p.setLeadTime(leadTime);
-        pr.save(p);
-        ns.sendDelayNotification(leadTime, p.getName());
+    public void notifyDelay(int leadTime, Product product, List<Product> updatedProducts) {
+        product.setLeadTime(leadTime);
+        updatedProducts.add(product);
+        notificationService.sendDelayNotification(leadTime, product.getName());
     }
 
-    public void handleSeasonalProduct(Product p) {
-        if (LocalDate.now().plusDays(p.getLeadTime()).isAfter(p.getSeasonEndDate())) {
-            ns.sendOutOfStockNotification(p.getName());
-            p.setAvailable(0);
-            pr.save(p);
-        } else if (p.getSeasonStartDate().isAfter(LocalDate.now())) {
-            ns.sendOutOfStockNotification(p.getName());
-            pr.save(p);
+    public void handleSeasonalProduct(Product product, List<Product> updatedProducts) {
+        if (LocalDate.now().plusDays(product.getLeadTime()).isAfter(product.getSeasonEndDate())) {
+            notificationService.sendOutOfStockNotification(product.getName());
+            product.setAvailable(0);
+            updatedProducts.add(product);
+        } else if (product.getSeasonStartDate().isAfter(LocalDate.now())) {
+            notificationService.sendOutOfStockNotification(product.getName());
+            updatedProducts.add(product);
         } else {
-            notifyDelay(p.getLeadTime(), p);
+            notifyDelay(product.getLeadTime(), product, updatedProducts);
         }
     }
 
-    public void handleExpiredProduct(Product p) {
-        if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
-            p.setAvailable(p.getAvailable() - 1);
-            pr.save(p);
+    public void handleExpiredProduct(Product product, List<Product> updatedProducts) {
+        int availableQnt;
+        if (product.getAvailable() > 0 && product.getExpiryDate().isAfter(LocalDate.now())) {
+            availableQnt = product.getAvailable() - 1;
         } else {
-            ns.sendExpirationNotification(p.getName(), p.getExpiryDate());
-            p.setAvailable(0);
-            pr.save(p);
+            notificationService.sendExpirationNotification(product.getName(), product.getExpiryDate());
+            availableQnt = 0;
         }
+        product.setAvailable(availableQnt);
+        updatedProducts.add(product);
     }
 }
