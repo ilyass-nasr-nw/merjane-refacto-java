@@ -64,16 +64,63 @@ public class MyControllerIntegrationTests {
         }
 
         private static List<Product> createProducts() {
-                List<Product> products = new ArrayList<>();
-                products.add(new Product(null, 15, 30, "NORMAL", "USB Cable", null, null, null));
-                products.add(new Product(null, 10, 0, "NORMAL", "USB Dongle", null, null, null));
-                products.add(new Product(null, 15, 30, "EXPIRABLE", "Butter", LocalDate.now().plusDays(26), null,
-                                null));
-                products.add(new Product(null, 90, 6, "EXPIRABLE", "Milk", LocalDate.now().minusDays(2), null, null));
-                products.add(new Product(null, 15, 30, "SEASONAL", "Watermelon", null, LocalDate.now().minusDays(2),
-                                LocalDate.now().plusDays(58)));
-                products.add(new Product(null, 15, 30, "SEASONAL", "Grapes", null, LocalDate.now().plusDays(180),
-                                LocalDate.now().plusDays(240)));
-                return products;
+            List<Product> products = new ArrayList<>();
+            
+            // Produit NORMAL avec stock
+            Product p1 = new Product();
+            p1.setLeadTime(15);
+            p1.setAvailable(30);
+            p1.setType("NORMAL");
+            p1.setName("USB Cable");
+            products.add(p1);
+            
+            // Produit NORMAL sans stock
+            Product p2 = new Product();
+            p2.setLeadTime(10);
+            p2.setAvailable(0);
+            p2.setType("NORMAL");
+            p2.setName("USB Dongle");
+            products.add(p2);
+            
+            // Produit EXPIRABLE non expiré
+            Product p3 = new Product();
+            p3.setLeadTime(15);
+            p3.setAvailable(30);
+            p3.setType("EXPIRABLE");
+            p3.setName("Butter");
+            p3.setExpiryDate(LocalDate.now().plusDays(26));
+            products.add(p3);
+            
+            // Produit EXPIRABLE expiré
+            Product p4 = new Product();
+            p4.setLeadTime(90);
+            p4.setAvailable(6);
+            p4.setType("EXPIRABLE");
+            p4.setName("Milk");
+            p4.setExpiryDate(LocalDate.now().minusDays(2));
+            products.add(p4);
+            
+            // Produit SEASONAL en saison
+            Product p5 = new Product();
+            p5.setLeadTime(15);
+            p5.setAvailable(30);
+            p5.setType("SEASONAL");
+            p5.setName("Watermelon");
+            p5.setSeasonStartDate(LocalDate.now().minusDays(2));
+            p5.setSeasonEndDate(LocalDate.now().plusDays(58));
+            products.add(p5);
+            
+            // Produit SEASONAL hors saison
+            Product p6 = new Product();
+            p6.setLeadTime(15);
+            p6.setAvailable(30);
+            p6.setType("SEASONAL");
+            p6.setName("Grapes");
+            p6.setSeasonStartDate(LocalDate.now().plusDays(180));
+            p6.setSeasonEndDate(LocalDate.now().plusDays(240));
+            products.add(p6);
+            
+            return products;
         }
+
 }

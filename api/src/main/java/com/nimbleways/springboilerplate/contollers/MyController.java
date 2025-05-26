@@ -19,9 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/orders" )
 public class MyController {
     @Autowired
     private ProductService ps;
@@ -35,7 +36,8 @@ public class MyController {
     @PostMapping("{orderId}/processOrder")
     @ResponseStatus(HttpStatus.OK)
     public ProcessOrderResponse processOrder(@PathVariable Long orderId) {
-        Order order = or.findById(orderId).get();
+        
+    	Order order = or.findById(orderId).get();
         System.out.println(order);
         List<Long> ids = new ArrayList<>();
         ids.add(orderId);
