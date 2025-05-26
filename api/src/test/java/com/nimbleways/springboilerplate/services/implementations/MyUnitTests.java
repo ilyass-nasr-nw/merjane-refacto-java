@@ -26,8 +26,12 @@ public class MyUnitTests {
 
     @Test
     public void test() {
-        // GIVEN
-        Product product =new Product(null, 15, 0, "NORMAL", "RJ45 Cable", null, null, null);
+        // GIVEN 
+    	Product product = new Product();
+        product.setLeadTime(15);
+        product.setAvailable(0);
+        product.setType("NORMAL");
+        product.setName("RJ45 Cable");
 
         Mockito.when(productRepository.save(product)).thenReturn(product);
 
