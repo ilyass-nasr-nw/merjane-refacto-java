@@ -1,5 +1,6 @@
 package com.nimbleways.springboilerplate.entities;
 
+import com.nimbleways.springboilerplate.enumerations.ProductTypeEnum;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -25,7 +26,8 @@ public class Product {
     private Integer available;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING) // in real a case scenario I need to check database values before using Enum and use a migration to fix types that are not included in this enum
+    private ProductTypeEnum type;
 
     @Column(name = "name")
     private String name;
@@ -38,4 +40,5 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
 }
