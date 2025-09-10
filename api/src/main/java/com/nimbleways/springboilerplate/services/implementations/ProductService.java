@@ -1,12 +1,16 @@
 package com.nimbleways.springboilerplate.services.implementations;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import com.nimbleways.springboilerplate.services.handlers.ProductHandlerInterface;
+
+
 
 @Service
 public class ProductService {
@@ -16,6 +20,13 @@ public class ProductService {
 
     @Autowired
     NotificationService ns;
+
+
+    private final List<ProductHandlerInterface> processors;
+
+    public ProductService(List<ProductHandlerInterface> processors) {
+        this.processors = processors;
+    }
 
     public void notifyDelay(int leadTime, Product p) {
         p.setLeadTime(leadTime);
@@ -45,5 +56,12 @@ public class ProductService {
             p.setAvailable(0);
             pr.save(p);
         }
+    }
+
+    public void processProduct(Product product) {
+        processors.stream()
+                .filter(p -> p.supports(product.getType()))
+                .findFirst()
+                .ifPresent(p -> p.process(product));
     }
 }
