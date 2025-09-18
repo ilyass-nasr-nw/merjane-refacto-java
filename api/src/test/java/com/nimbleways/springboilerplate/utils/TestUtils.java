@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 public class TestUtils {
-    public TestUtils() {
+
+    // static utility class
+    private TestUtils() {
     }
 
     public static String readJsonFile(String fileName, Class<?> testClass) {
