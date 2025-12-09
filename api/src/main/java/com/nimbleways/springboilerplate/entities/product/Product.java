@@ -1,6 +1,8 @@
-package com.nimbleways.springboilerplate.entities;
+package com.nimbleways.springboilerplate.entities.product;
 
+import com.nimbleways.springboilerplate.enums.ProductType;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
@@ -11,8 +13,11 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
 @Table(name = "products")
-public class Product {
+@SuperBuilder
+public abstract class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,18 +29,10 @@ public class Product {
     @Column(name = "available")
     private Integer available;
 
-    @Column(name = "type")
-    private String type;
-
     @Column(name = "name")
     private String name;
 
-    @Column(name = "expiry_date")
-    private LocalDate expiryDate;
-
-    @Column(name = "season_start_date")
-    private LocalDate seasonStartDate;
-
-    @Column(name = "season_end_date")
-    private LocalDate seasonEndDate;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
 }

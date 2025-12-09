@@ -1,5 +1,6 @@
-package com.nimbleways.springboilerplate.entities;
+package com.nimbleways.springboilerplate.entities.order;
 
+import com.nimbleways.springboilerplate.entities.product.Product;
 import lombok.*;
 
 import java.util.Set;
