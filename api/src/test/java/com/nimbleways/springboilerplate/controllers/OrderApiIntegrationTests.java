@@ -1,7 +1,11 @@
 package com.nimbleways.springboilerplate.controllers;
 
-import com.nimbleways.springboilerplate.entities.Order;
-import com.nimbleways.springboilerplate.entities.Product;
+import com.nimbleways.springboilerplate.entities.order.Order;
+import com.nimbleways.springboilerplate.entities.product.ExpirableProduct;
+import com.nimbleways.springboilerplate.entities.product.NormalProduct;
+import com.nimbleways.springboilerplate.entities.product.Product;
+import com.nimbleways.springboilerplate.entities.product.SeasonalProduct;
+import com.nimbleways.springboilerplate.enums.ProductType;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
@@ -30,7 +34,7 @@ import java.util.Set;
 // Which allows a better performance and needs to do less mocks
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MyControllerIntegrationTests {
+public class OrderApiIntegrationTests {
         @Autowired
         private MockMvc mockMvc;
 
@@ -63,17 +67,54 @@ public class MyControllerIntegrationTests {
                 return order;
         }
 
-        private static List<Product> createProducts() {
-                List<Product> products = new ArrayList<>();
-                products.add(new Product(null, 15, 30, "NORMAL", "USB Cable", null, null, null));
-                products.add(new Product(null, 10, 0, "NORMAL", "USB Dongle", null, null, null));
-                products.add(new Product(null, 15, 30, "EXPIRABLE", "Butter", LocalDate.now().plusDays(26), null,
-                                null));
-                products.add(new Product(null, 90, 6, "EXPIRABLE", "Milk", LocalDate.now().minusDays(2), null, null));
-                products.add(new Product(null, 15, 30, "SEASONAL", "Watermelon", null, LocalDate.now().minusDays(2),
-                                LocalDate.now().plusDays(58)));
-                products.add(new Product(null, 15, 30, "SEASONAL", "Grapes", null, LocalDate.now().plusDays(180),
-                                LocalDate.now().plusDays(240)));
-                return products;
-        }
+    private static List<Product> createProducts() {
+        List<Product> products = new ArrayList<>();
+        products.add(NormalProduct.builder()
+                .leadTime(15)
+                .available(30)
+                .type(ProductType.NORMAL)
+                .name("USB Cable")
+                .build());
+        products.add(NormalProduct.builder()
+                .leadTime(10)
+                .available(0)
+                .type(ProductType.NORMAL)
+                .name("USB Dongle")
+                .build());
+        products.add(ExpirableProduct.builder()
+                .leadTime(15)
+                .available(30)
+                .type(ProductType.EXPIRABLE)
+                .name("Butter")
+                .expiryDate(LocalDate.now().plusDays(26))
+                .build());
+
+        products.add(ExpirableProduct.builder()
+                .leadTime(90)
+                .available(6)
+                .type(ProductType.EXPIRABLE)
+                .name("Milk")
+                .expiryDate(LocalDate.now().minusDays(2))
+                .build());
+        products.add(SeasonalProduct.builder()
+                .leadTime(15)
+                .available(30)
+                .type(ProductType.SEASONAL)
+                .name("Watermelon")
+                .seasonStartDate(LocalDate.now().minusDays(2))
+                .seasonEndDate(LocalDate.now().plusDays(58))
+                .build());
+        products.add(SeasonalProduct.builder()
+                .leadTime(15)
+                .available(30)
+                .type(ProductType.SEASONAL)
+                .name("Grapes")
+                .seasonStartDate(LocalDate.now().minusDays(180))
+                .seasonEndDate(LocalDate.now().plusDays(240))
+                .build());
+
+
+        return products;
+    }
+
 }
