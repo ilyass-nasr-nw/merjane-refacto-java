@@ -6,7 +6,7 @@ import com.nimbleways.springboilerplate.order.OrderService;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
-import com.nimbleways.springboilerplate.services.implementations.ProductService;
+import com.nimbleways.springboilerplate.services.ProductService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
