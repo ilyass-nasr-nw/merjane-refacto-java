@@ -5,7 +5,7 @@ import com.nimbleways.springboilerplate.entities.NormalProduct;
 import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.enums.ProductType;
-import com.nimbleways.springboilerplate.exceptions.OrderNotFoundException;
+import com.nimbleways.springboilerplate.exception.OrderException;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.services.product.ProductService;
 import com.nimbleways.springboilerplate.utils.Annotations.UnitTest;
@@ -56,7 +56,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void shouldProcessOrderSuccessfully() throws OrderNotFoundException {
+    public void shouldProcessOrderSuccessfully() throws OrderException {
         // GIVEN
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         doNothing().when(productService).processProduct(any(Product.class));
@@ -75,12 +75,12 @@ public class OrderServiceTest {
         // GIVEN
         when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(OrderNotFoundException.class, () -> orderService.processOrder(1L));
+        assertThrows(OrderException.class, () -> orderService.processOrder(1L));
         verify(orderRepository, times(1)).findById(1L);
     }
 
     @Test
-    public void shouldHandleOrderWithNoProducts() throws OrderNotFoundException {
+    public void shouldHandleOrderWithNoProducts() throws OrderException {
         // GIVEN
         Order emptyOrder = new Order();
         emptyOrder.setId(2L);

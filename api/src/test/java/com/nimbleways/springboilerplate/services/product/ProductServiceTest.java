@@ -2,7 +2,7 @@ package com.nimbleways.springboilerplate.services.product;
 
 import com.nimbleways.springboilerplate.entities.NormalProduct;
 import com.nimbleways.springboilerplate.enums.ProductType;
-import com.nimbleways.springboilerplate.services.product.factory.ProductStrategyFactory;
+import com.nimbleways.springboilerplate.services.product.factory.ProductFactory;
 import com.nimbleways.springboilerplate.services.product.strategy.HandleProductStrategy;
 import com.nimbleways.springboilerplate.utils.Annotations.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ public class ProductServiceTest {
 
 
     @Mock
-    private ProductStrategyFactory productStrategyFactory;
+    private ProductFactory productStrategyFactory;
 
     @Mock
     private HandleProductStrategy handleProductStrategy;
