@@ -1,7 +1,9 @@
+package com.nimbleways.springboilerplate.services.order;
+
 import com.nimbleways.springboilerplate.dto.product.ProcessOrderResponse;
 import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
-import com.nimbleways.springboilerplate.exceptions.OrderException;
+import com.nimbleways.springboilerplate.exception.OrderException;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.services.product.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,7 @@ public class OrderService {
             try {
                 productService.processProduct(product);
             } catch (Exception e) {
-           logger.error("Error for product {}", product, e);
+                logger.error("Error for product {}", product, e);
             }
         });
 
