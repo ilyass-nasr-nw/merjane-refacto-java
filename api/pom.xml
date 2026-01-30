@@ -16,7 +16,7 @@
 		<java.version>17</java.version>
 		<spring-security.version>5.6.9</spring-security.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-		<org.projectlombok.version>1.18.20</org.projectlombok.version>
+		<org.projectlombok.version>1.18.32</org.projectlombok.version>
 		<org.liquibase.version>4.17.2</org.liquibase.version>
 		<org.owasp.dependency-check-maven.version>7.1.1</org.owasp.dependency-check-maven.version>
 		<org.owasp.dependency-check-maven.suppressionFile>dependency-check-suppressions.xml</org.owasp.dependency-check-maven.suppressionFile>
