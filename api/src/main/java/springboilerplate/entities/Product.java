@@ -6,6 +6,8 @@ import java.time.LocalDate;
 
 import javax.persistence.*;
 
+import com.nimbleways.springboilerplate.entities.enums.ProductType;
+
 @Entity
 @Getter
 @Setter
@@ -25,7 +27,8 @@ public class Product {
     private Integer available;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
 
     @Column(name = "name")
     private String name;
@@ -38,4 +41,5 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
 }
