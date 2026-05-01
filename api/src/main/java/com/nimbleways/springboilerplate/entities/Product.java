@@ -1,5 +1,6 @@
 package com.nimbleways.springboilerplate.entities;
 
+import com.nimbleways.springboilerplate.utils.enums.OrderType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -15,19 +16,20 @@ import javax.persistence.*;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "lead_time")
+    @Column(name = "lead_time", nullable = false)
     private Integer leadTime;
 
-    @Column(name = "available")
+    @Column(name = "available", nullable = false)
     private Integer available;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private OrderType type;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "expiry_date")
