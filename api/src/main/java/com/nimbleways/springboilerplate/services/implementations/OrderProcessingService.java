@@ -21,11 +21,10 @@ public class OrderProcessingService {
     }
 
     public ProcessOrderResponse processOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).get();
-        System.out.println(order);
+        Order order = orderRepository.findById(orderId).orElseThrow();
         Set<Product> products = order.getItems();
-        for (Product p : products) {
-            productAvailabilityService.process(p);
+        for (Product product : products) {
+            productAvailabilityService.process(product);
         }
 
         return new ProcessOrderResponse(order.getId());

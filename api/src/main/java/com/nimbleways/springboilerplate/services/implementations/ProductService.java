@@ -1,23 +1,25 @@
 package com.nimbleways.springboilerplate.services.implementations;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
 
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final NotificationService notificationService;
 
-    @Autowired
-    NotificationService notificationService;
+    public ProductService(
+            ProductRepository productRepository,
+            NotificationService notificationService) {
+        this.productRepository = productRepository;
+        this.notificationService = notificationService;
+    }
 
-    public void notifyDelay(int leadTime, Product p) {
-        p.setLeadTime(leadTime);
-        productRepository.save(p);
-        notificationService.sendDelayNotification(leadTime, p.getName());
+    public void notifyDelay(int leadTime, Product product) {
+        product.setLeadTime(leadTime);
+        productRepository.save(product);
+        notificationService.sendDelayNotification(leadTime, product.getName());
     }
 }
