@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,16 +97,42 @@ public class MyControllerIntegrationTests {
         verify(notificationService).sendExpirationNotification("Milk", expiryDate);
     }
 
+    @Test
+    public void processOrderShouldProcessEveryProductInTheOrder() throws Exception {
+        Product availableProduct = productRepository.save(
+                new Product(null, 15, 2, "NORMAL", "HDMI Cable", null, null, null));
+        Product unavailableProduct = productRepository.save(
+                new Product(null, 4, 0, "EXPIRABLE", "Cheese", LocalDate.now().plusDays(10), null, null));
+        Order savedOrder = orderRepository.save(createOrder(Set.of(availableProduct, unavailableProduct)));
+
+        processOrder(savedOrder);
+
+        Product availableResult = findProduct(availableProduct);
+        Product unavailableResult = findProduct(unavailableProduct);
+        assertThat(availableResult.getAvailable()).isEqualTo(1);
+        assertThat(unavailableResult.getAvailable()).isEqualTo(0);
+        verify(notificationService).sendDelayNotification(4, "Cheese");
+        verifyNoMoreInteractions(notificationService);
+    }
+
     private Product processOrderWith(Product product) throws Exception {
         Product savedProduct = productRepository.save(product);
         Order savedOrder = orderRepository.save(createOrder(Set.of(savedProduct)));
 
+        processOrder(savedOrder);
+
+        return findProduct(savedProduct);
+    }
+
+    private void processOrder(Order savedOrder) throws Exception {
         mockMvc.perform(post("/orders/{orderId}/processOrder", savedOrder.getId())
                         .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedOrder.getId()));
+    }
 
-        Optional<Product> result = productRepository.findById(savedProduct.getId());
+    private Product findProduct(Product product) {
+        Optional<Product> result = productRepository.findById(product.getId());
         return result.orElseThrow();
     }
 
