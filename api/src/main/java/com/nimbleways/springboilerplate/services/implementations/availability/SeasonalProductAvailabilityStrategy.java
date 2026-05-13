@@ -36,9 +36,7 @@ public class SeasonalProductAvailabilityStrategy implements ProductAvailabilityS
     @Override
     public void process(Product product) {
         LocalDate today = LocalDate.now(clock);
-        if (today.isAfter(product.getSeasonStartDate())
-                && today.isBefore(product.getSeasonEndDate())
-                && product.getAvailable() > 0) {
+        if (isInSeason(product, today) && product.getAvailable() > 0) {
             decrementAvailable(product);
         } else if (today.plusDays(product.getLeadTime()).isAfter(product.getSeasonEndDate())) {
             notificationService.sendOutOfStockNotification(product.getName());
@@ -50,6 +48,11 @@ public class SeasonalProductAvailabilityStrategy implements ProductAvailabilityS
         } else {
             productService.notifyDelay(product.getLeadTime(), product);
         }
+    }
+
+    private boolean isInSeason(Product product, LocalDate today) {
+        return !today.isBefore(product.getSeasonStartDate())
+                && !today.isAfter(product.getSeasonEndDate());
     }
 
     private void decrementAvailable(Product product) {

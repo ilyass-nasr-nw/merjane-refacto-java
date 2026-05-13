@@ -4,6 +4,7 @@ import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.entities.ProductType;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
+import com.nimbleways.springboilerplate.services.implementations.ProductService;
 import java.time.Clock;
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
@@ -13,14 +14,17 @@ public class ExpirableProductAvailabilityStrategy implements ProductAvailability
 
     private final ProductRepository productRepository;
     private final NotificationService notificationService;
+    private final ProductService productService;
     private final Clock clock;
 
     public ExpirableProductAvailabilityStrategy(
             ProductRepository productRepository,
             NotificationService notificationService,
+            ProductService productService,
             Clock clock) {
         this.productRepository = productRepository;
         this.notificationService = notificationService;
+        this.productService = productService;
         this.clock = clock;
     }
 
@@ -32,12 +36,14 @@ public class ExpirableProductAvailabilityStrategy implements ProductAvailability
     @Override
     public void process(Product product) {
         LocalDate today = LocalDate.now(clock);
-        if (product.getAvailable() > 0 && product.getExpiryDate().isAfter(today)) {
-            decrementAvailable(product);
-        } else {
+        if (product.getExpiryDate().isBefore(today)) {
             notificationService.sendExpirationNotification(product.getName(), product.getExpiryDate());
             product.setAvailable(0);
             productRepository.save(product);
+        } else if (product.getAvailable() > 0) {
+            decrementAvailable(product);
+        } else if (product.getLeadTime() > 0) {
+            productService.notifyDelay(product.getLeadTime(), product);
         }
     }
 
