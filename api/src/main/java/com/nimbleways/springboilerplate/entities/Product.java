@@ -1,5 +1,6 @@
 package com.nimbleways.springboilerplate.entities;
 
+import com.nimbleways.springboilerplate.enums.ProductType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,8 +25,8 @@ public class Product {
     @Column(name = "available")
     private Integer available;
 
-    @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
 
     @Column(name = "name")
     private String name;
@@ -38,4 +39,15 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
+    public boolean isInStock() {
+        return available != null && available > 0;
+    }
+
+    public void decrementStock() {
+        if (!isInStock()) {
+            throw new IllegalStateException("Cannot decrement stock: product " + name + " is out of stock");
+        }
+        this.available = this.available - 1;
+    }
 }
