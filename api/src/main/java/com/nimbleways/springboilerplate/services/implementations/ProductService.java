@@ -2,48 +2,91 @@ package com.nimbleways.springboilerplate.services.implementations;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    @Autowired
-    ProductRepository pr;
+    private final ProductRepository productRepository;
+    private final NotificationService notificationService;
 
-    @Autowired
-    NotificationService ns;
 
-    public void notifyDelay(int leadTime, Product p) {
-        p.setLeadTime(leadTime);
-        pr.save(p);
-        ns.sendDelayNotification(leadTime, p.getName());
-    }
-
-    public void handleSeasonalProduct(Product p) {
-        if (LocalDate.now().plusDays(p.getLeadTime()).isAfter(p.getSeasonEndDate())) {
-            ns.sendOutOfStockNotification(p.getName());
-            p.setAvailable(0);
-            pr.save(p);
-        } else if (p.getSeasonStartDate().isAfter(LocalDate.now())) {
-            ns.sendOutOfStockNotification(p.getName());
-            pr.save(p);
-        } else {
-            notifyDelay(p.getLeadTime(), p);
+    // Entry point: handles any product type during order processing
+    public void processProduct(Product product) {
+        switch (product.getType()) {
+            case NORMAL:
+                handleNormalProduct(product);
+                break;
+            case SEASONAL:
+                handleSeasonalProduct(product);
+                break;
+            case EXPIRABLE:
+                handleExpirableProduct(product);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown product type: " + product.getType());
         }
     }
 
-    public void handleExpiredProduct(Product p) {
-        if (p.getAvailable() > 0 && p.getExpiryDate().isAfter(LocalDate.now())) {
-            p.setAvailable(p.getAvailable() - 1);
-            pr.save(p);
+    private void handleNormalProduct(Product product) {
+        if (product.isInStock()) {
+            product.decrementStock();
+            productRepository.save(product);
         } else {
-            ns.sendExpirationNotification(p.getName(), p.getExpiryDate());
-            p.setAvailable(0);
-            pr.save(p);
+            notifyDelay(product);
         }
+    }
+
+    private void handleSeasonalProduct(Product product) {
+        LocalDate today = LocalDate.now();
+
+        if (!isWithinSeason(product, today)) {
+            notificationService.sendOutOfStockNotification(product.getName());
+            product.setAvailable(0);
+            productRepository.save(product);
+            return;
+        }
+
+        if (product.isInStock()) {
+            product.decrementStock();
+            productRepository.save(product);
+        } else if (wouldRestockBeforeSeasonEnds(product, today)) {
+            notifyDelay(product);
+        } else {
+            notificationService.sendOutOfStockNotification(product.getName());
+            product.setAvailable(0);
+            productRepository.save(product);
+        }
+    }
+
+    private void handleExpirableProduct(Product product) {
+        LocalDate today = LocalDate.now();
+
+        if (product.isInStock() && product.getExpiryDate().isAfter(today)) {
+            product.decrementStock();
+            productRepository.save(product);
+        } else {
+            notificationService.sendExpirationNotification(product.getName(), product.getExpiryDate());
+            product.setAvailable(0);
+            productRepository.save(product);
+        }
+    }
+
+    private void notifyDelay(Product product) {
+        productRepository.save(product);
+        notificationService.sendDelayNotification(product.getLeadTime(), product.getName());
+    }
+
+    private boolean isWithinSeason(Product product, LocalDate today) {
+        return !today.isBefore(product.getSeasonStartDate()) && !today.isAfter(product.getSeasonEndDate());
+    }
+
+    private boolean wouldRestockBeforeSeasonEnds(Product product, LocalDate today) {
+        return !today.plusDays(product.getLeadTime()).isAfter(product.getSeasonEndDate());
     }
 }
