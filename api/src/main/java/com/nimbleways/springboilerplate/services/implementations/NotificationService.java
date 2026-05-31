@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     public void sendDelayNotification(int leadTime, String productName) {
+    	System.out.println("Delay Notification: Product '" + productName + "' has a lead time of " + leadTime + " days.");
     }
 
     public void sendOutOfStockNotification(String productName) {

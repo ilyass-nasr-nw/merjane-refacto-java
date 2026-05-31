@@ -1,0 +1,114 @@
+package com.nimbleways.springboilerplate.controllers;
+
+@RestController
+@RequestMapping("/test")
+public class TestController {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @PostMapping("/normal/in-stock")
+    public Long createNormalInStockOrder() {
+
+        Product p = new Product();
+        p.setType("NORMAL");
+        p.setAvailable(10);
+        p.setLeadTime(0);
+
+        p = productRepository.save(p);
+
+        Order order = new Order();
+        order.setItems(Set.of(p));
+
+        return orderRepository.save(order).getId();
+    }
+
+    @PostMapping("/normal/out-of-stock")
+    public Long createNormalOutOfStockOrder() {
+
+        Product p = new Product();
+        p.setType("NORMAL");
+        p.setAvailable(0);
+        p.setLeadTime(5);
+
+        p = productRepository.save(p);
+
+        Order order = new Order();
+        order.setItems(Set.of(p));
+
+        return orderRepository.save(order).getId();
+    }
+
+    @PostMapping("/seasonal/in-season")
+    public Long createSeasonalInSeasonOrder() {
+
+        Product p = new Product();
+        p.setType("SEASONAL");
+        p.setAvailable(5);
+        p.setLeadTime(3);
+
+        p.setSeasonStartDate(LocalDate.now().minusDays(10));
+        p.setSeasonEndDate(LocalDate.now().plusDays(10));
+
+        p = productRepository.save(p);
+
+        Order order = new Order();
+        order.setItems(Set.of(p));
+
+        return orderRepository.save(order).getId();
+    }
+
+    @PostMapping("/seasonal/out-of-season")
+    public Long createSeasonalOutOfSeasonOrder() {
+
+        Product p = new Product();
+        p.setType("SEASONAL");
+        p.setAvailable(5);
+        p.setLeadTime(3);
+
+        p.setSeasonStartDate(LocalDate.now().minusMonths(2));
+        p.setSeasonEndDate(LocalDate.now().minusMonths(1));
+
+        p = productRepository.save(p);
+
+        Order order = new Order();
+        order.setItems(Set.of(p));
+
+        return orderRepository.save(order).getId();
+    }
+
+    @PostMapping("/expirable/valid")
+    public Long createValidExpirableOrder() {
+
+        Product p = new Product();
+        p.setType("EXPIRABLE");
+        p.setAvailable(5);
+        p.setExpiryDate(LocalDate.now().plusDays(30));
+
+        p = productRepository.save(p);
+
+        Order order = new Order();
+        order.setItems(Set.of(p));
+
+        return orderRepository.save(order).getId();
+    }
+
+    @PostMapping("/expirable/expired")
+    public Long createExpiredExpirableOrder() {
+
+        Product p = new Product();
+        p.setType("EXPIRABLE");
+        p.setAvailable(5);
+        p.setExpiryDate(LocalDate.now().minusDays(1));
+
+        p = productRepository.save(p);
+
+        Order order = new Order();
+        order.setItems(Set.of(p));
+
+        return orderRepository.save(order).getId();
+    }
+}

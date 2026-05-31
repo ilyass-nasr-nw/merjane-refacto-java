@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate.format_sql: true
@@ -16,20 +16,20 @@ spring:
   liquibase:
     enabled: false
 
-springdoc:
+  springdoc:
   api-docs:
     enabled: ${ENABLE_SWAGGER:true}
 
-logging:
+  logging:
   level:
     root: INFO
 
-server:
+  server:
   port: 8080
   servlet:
     context-path: /api
 
-management:
+  management:
   endpoints:
     enabled-by-default: false
     web:
