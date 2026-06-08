@@ -37,12 +37,6 @@ public class MyControllerIntegrationTests {
     @Autowired
     private ProductRepository productRepository;
 
-    @BeforeEach
-    void setUp() {
-        orderRepository.deleteAll();
-        productRepository.deleteAll();
-    }
-
     // ==========================================
     // NORMAL PRODUCTS
     // ==========================================
