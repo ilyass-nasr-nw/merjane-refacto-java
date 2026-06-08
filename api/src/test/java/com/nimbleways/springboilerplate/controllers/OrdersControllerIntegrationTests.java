@@ -5,7 +5,6 @@ import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,7 +22,7 @@ import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MyControllerIntegrationTests {
+public class OrdersControllerIntegrationTests {
 
     @Autowired
     private MockMvc mockMvc;
