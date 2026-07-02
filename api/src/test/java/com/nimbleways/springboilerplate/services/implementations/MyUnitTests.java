@@ -1,6 +1,7 @@
 package com.nimbleways.springboilerplate.services.implementations;
 
 import com.nimbleways.springboilerplate.entities.Product;
+import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.utils.Annotations.UnitTest;
 
@@ -19,6 +20,8 @@ public class MyUnitTests {
 
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private OrderRepository orderRepository;
     @Mock
     private ProductRepository productRepository;
     @InjectMocks 

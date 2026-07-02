@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.nimbleways.springboilerplate.dto.product.ProcessOrderResponse;
+import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
+import com.nimbleways.springboilerplate.exceptions.OrderNotFoundException;
+import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.processing.ExpirableProductProcessingStrategy;
 import com.nimbleways.springboilerplate.services.processing.NormalProductProcessingStrategy;
@@ -31,6 +37,9 @@ class ProductProcessingStrategiesUnitTests {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private OrderRepository orderRepository;
 
     @Mock
     private NotificationService notificationService;
@@ -182,7 +191,11 @@ class ProductProcessingStrategiesUnitTests {
         Product unsupported = product("UNKNOWN", 19, 1, 1, null, null, null);
         when(strategy.supports(unsupported)).thenReturn(false);
 
-        ProductServiceImpl service = new ProductServiceImpl(productRepository, notificationService, List.of(strategy));
+        ProductServiceImpl service = new ProductServiceImpl(
+                orderRepository,
+                productRepository,
+                notificationService,
+                List.of(strategy));
 
         assertThrows(IllegalArgumentException.class, () -> service.process(unsupported));
     }
@@ -192,9 +205,48 @@ class ProductProcessingStrategiesUnitTests {
         Product unsupported = product(null, 20, 1, 1, null, null, null);
         when(strategy.supports(unsupported)).thenReturn(false);
 
-        ProductServiceImpl service = new ProductServiceImpl(productRepository, notificationService, List.of(strategy));
+        ProductServiceImpl service = new ProductServiceImpl(
+                orderRepository,
+                productRepository,
+                notificationService,
+                List.of(strategy));
 
         assertThrows(IllegalArgumentException.class, () -> service.process(unsupported));
+    }
+
+    @Test
+    void processOrderShouldFailWhenOrderDoesNotExist() {
+        when(orderRepository.findById(21L)).thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class, () -> productService.processOrder(21L));
+    }
+
+    @Test
+    void processOrderShouldProcessAllProductsAndReturnResponse() {
+        Product firstProduct = product("NORMAL", 22, 2, 3, null, null, null);
+        Product secondProduct = product("NORMAL", 23, 1, 3, null, null, null);
+        Order order = new Order();
+        order.setId(24L);
+        order.setItems(Set.of(firstProduct, secondProduct));
+
+        when(orderRepository.findById(24L)).thenReturn(Optional.of(order));
+        when(productRepository.save(firstProduct)).thenReturn(firstProduct);
+        when(productRepository.save(secondProduct)).thenReturn(secondProduct);
+
+        ProductServiceImpl service = new ProductServiceImpl(
+                orderRepository,
+                productRepository,
+                notificationService,
+                List.of(normalStrategy));
+
+        ProcessOrderResponse response = service.processOrder(24L);
+
+        assertEquals(24L, response.id());
+        assertEquals(1, firstProduct.getAvailable());
+        assertEquals(0, secondProduct.getAvailable());
+        verify(orderRepository, times(1)).findById(24L);
+        verify(productRepository, times(1)).save(firstProduct);
+        verify(productRepository, times(1)).save(secondProduct);
     }
 
     private Product product(

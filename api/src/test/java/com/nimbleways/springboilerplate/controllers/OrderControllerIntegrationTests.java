@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +51,16 @@ public class OrderControllerIntegrationTests {
                                 .andExpect(status().isOk());
                 Order resultOrder = orderRepository.findById(order.getId()).get();
                 assertEquals(resultOrder.getId(), order.getId());
+        }
+
+        @Test
+        public void processOrderShouldReturnNotFoundWhenOrderDoesNotExist() throws Exception {
+                mockMvc.perform(post("/orders/{orderId}/processOrder", 999999L)
+                                .contentType("application/json"))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.status").value(404))
+                                .andExpect(jsonPath("$.error").value("Not Found"))
+                                .andExpect(jsonPath("$.message").value("Order not found: 999999"));
         }
 
         private static Order createOrder(Set<Product> products) {
