@@ -13,8 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.Assert.assertEquals;
-
-// import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,12 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// Specify the controller class you want to test
-// This indicates to spring boot to only load UsersController into the context
-// Which allows a better performance and needs to do less mocks
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MyControllerIntegrationTests {
+public class OrderControllerIntegrationTests {
         @Autowired
         private MockMvc mockMvc;
 
@@ -55,6 +51,16 @@ public class MyControllerIntegrationTests {
                                 .andExpect(status().isOk());
                 Order resultOrder = orderRepository.findById(order.getId()).get();
                 assertEquals(resultOrder.getId(), order.getId());
+        }
+
+        @Test
+        public void processOrderShouldReturnNotFoundWhenOrderDoesNotExist() throws Exception {
+                mockMvc.perform(post("/orders/{orderId}/processOrder", 999999L)
+                                .contentType("application/json"))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.status").value(404))
+                                .andExpect(jsonPath("$.error").value("Not Found"))
+                                .andExpect(jsonPath("$.message").value("Order not found: 999999"));
         }
 
         private static Order createOrder(Set<Product> products) {
