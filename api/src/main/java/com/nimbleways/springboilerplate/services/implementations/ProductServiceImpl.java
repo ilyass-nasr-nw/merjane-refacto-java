@@ -6,16 +6,17 @@ import org.springframework.stereotype.Service;
 
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
+import com.nimbleways.springboilerplate.services.ProductService;
 import com.nimbleways.springboilerplate.services.processing.ProductProcessingStrategy;
 
 @Service
-public class ProductService {
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final NotificationService notificationService;
     private final List<ProductProcessingStrategy> strategies;
 
-    public ProductService(
+    public ProductServiceImpl(
             ProductRepository productRepository,
             NotificationService notificationService,
             List<ProductProcessingStrategy> strategies) {
@@ -24,11 +25,7 @@ public class ProductService {
         this.strategies = strategies;
     }
 
-    /**
-     * Processes the given product using the appropriate strategy based on its type.
-     * @param product The product to process.
-     * @throws IllegalArgumentException if no strategy supports the product type.
-     */
+    @Override
     public void process(Product product) {
         strategies.stream()
                 .filter(strategy -> strategy.supports(product))
@@ -37,34 +34,30 @@ public class ProductService {
                 .process(product);
     }
 
-    // Additional helper methods for notifications and product updates
-    public void notifyDelay(int leadTime, Product p) {
-        p.setLeadTime(leadTime);
-        productRepository.save(p);
-        notificationService.sendDelayNotification(leadTime, p.getName());
+    @Override
+    public void notifyDelay(int leadTime, Product product) {
+        product.setLeadTime(leadTime);
+        productRepository.save(product);
+        notificationService.sendDelayNotification(leadTime, product.getName());
     }
 
-    /**
-     * Decrements the availability of the given prodct and saves it to the repository.
-     * @param product The product whose availability is to be decremented.
-     */
+    @Override
     public void decrementAvailability(Product product) {
         product.setAvailable(product.getAvailable() - 1);
         productRepository.save(product);
     }
 
+    @Override
     public void notifyOutOfStock(Product product) {
         notificationService.sendOutOfStockNotification(product.getName());
     }
 
-    /**
-     * Sets the availability of the given product to 0 and saves it to the repository.
-     * @param product The product whose availability is to be set to 0.
-     */
+    @Override
     public void notifyExpiration(Product product) {
         notificationService.sendExpirationNotification(product.getName(), product.getExpiryDate());
     }
 
+    @Override
     public void save(Product product) {
         productRepository.save(product);
     }

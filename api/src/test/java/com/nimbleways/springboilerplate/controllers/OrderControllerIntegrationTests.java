@@ -14,8 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.Assert.assertEquals;
 
-// import com.fasterxml.jackson.databind.ObjectMapper;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,12 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// Specify the controller class you want to test
-// This indicates to spring boot to only load UsersController into the context
-// Which allows a better performance and needs to do less mocks
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MyControllerIntegrationTests {
+public class OrderControllerIntegrationTests {
         @Autowired
         private MockMvc mockMvc;
 

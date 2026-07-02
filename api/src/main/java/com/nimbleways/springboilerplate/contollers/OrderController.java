@@ -4,7 +4,7 @@ import com.nimbleways.springboilerplate.dto.product.ProcessOrderResponse;
 import com.nimbleways.springboilerplate.entities.Order;
 import com.nimbleways.springboilerplate.entities.Product;
 import com.nimbleways.springboilerplate.repositories.OrderRepository;
-import com.nimbleways.springboilerplate.services.implementations.ProductService;
+import com.nimbleways.springboilerplate.services.ProductService;
 
 import java.util.Set;
 
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/orders")
-public class MyController {
+public class OrderController {
     private final ProductService productService;
     private final OrderRepository orderRepository;
 
-    public MyController(ProductService productService, OrderRepository orderRepository) {
+    public OrderController(ProductService productService, OrderRepository orderRepository) {
         this.productService = productService;
         this.orderRepository = orderRepository;
     }
@@ -30,10 +30,10 @@ public class MyController {
     @ResponseStatus(HttpStatus.OK)
     public ProcessOrderResponse processOrder(@PathVariable Long orderId) {
         Order order = orderRepository.findById(orderId).get();
-        System.out.println(order);
+        //TODO: use log instad of sys System.out.println(order);
         Set<Product> products = order.getItems();
-        for (Product p : products) {
-            productService.process(p);
+        for (Product product : products) {
+            productService.process(product);
         }
 
         return new ProcessOrderResponse(order.getId());

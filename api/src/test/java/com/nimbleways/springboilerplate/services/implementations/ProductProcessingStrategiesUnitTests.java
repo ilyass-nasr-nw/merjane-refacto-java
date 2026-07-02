@@ -43,7 +43,7 @@ class ProductProcessingStrategiesUnitTests {
     private ProductProcessingStrategy strategy;
 
     @InjectMocks
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @BeforeEach
     void setUp() {
@@ -182,7 +182,7 @@ class ProductProcessingStrategiesUnitTests {
         Product unsupported = product("UNKNOWN", 19, 1, 1, null, null, null);
         when(strategy.supports(unsupported)).thenReturn(false);
 
-        ProductService service = new ProductService(productRepository, notificationService, List.of(strategy));
+        ProductServiceImpl service = new ProductServiceImpl(productRepository, notificationService, List.of(strategy));
 
         assertThrows(IllegalArgumentException.class, () -> service.process(unsupported));
     }
@@ -192,7 +192,7 @@ class ProductProcessingStrategiesUnitTests {
         Product unsupported = product(null, 20, 1, 1, null, null, null);
         when(strategy.supports(unsupported)).thenReturn(false);
 
-        ProductService service = new ProductService(productRepository, notificationService, List.of(strategy));
+        ProductServiceImpl service = new ProductServiceImpl(productRepository, notificationService, List.of(strategy));
 
         assertThrows(IllegalArgumentException.class, () -> service.process(unsupported));
     }

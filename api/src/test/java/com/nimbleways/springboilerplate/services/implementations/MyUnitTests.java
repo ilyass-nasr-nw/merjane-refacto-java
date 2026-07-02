@@ -22,7 +22,7 @@ public class MyUnitTests {
     @Mock
     private ProductRepository productRepository;
     @InjectMocks 
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @Test
     public void test() {
