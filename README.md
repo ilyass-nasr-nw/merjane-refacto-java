@@ -1,8 +1,19 @@
-### Consignes: 
-* Ignorez les migrations BDD
-* Ne pas modifier les classes qui ont un commentaire: `// WARN: Should not be changed during the exercise
-`
-* Pour lancer les tests (depuis le sous-répertoire `api`) :
-  * unitaires: `mvnw test`
-  * integration: `mvnw integration-test`
-  * tous: `mvnw verify`
+# Merjane - Inventory Management
+
+## Running tests
+
+From the api folder:
+
+```bash
+./mvnw verify
+```
+
+## Architecture
+
+```
+controllers/    HTTP layer only, no business logic
+services/       orchestration + product type handlers
+persistence/    repositories and entities
+domain/         shared types (ProductType enum)
+messaging/      request/response DTOs
+```

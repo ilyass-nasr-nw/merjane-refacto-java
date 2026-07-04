@@ -8,9 +8,9 @@
 		<version>2.6.9</version>
 	</parent>
 	<groupId>com.nimbleways</groupId>
-	<artifactId>springboilerplate</artifactId>
+	<artifactId>merjane</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springboilerplate</name>
+	<name>merjane</name>
 	<description>Nimbleways Spring Boilerplate</description>
 	<properties>
 		<java.version>17</java.version>
@@ -262,7 +262,7 @@
 					<username>user</username>
 					<password>password</password>
 					<driver>org.postgresql.Driver</driver>
-					<referenceUrl>hibernate:spring:com.nimbleways.springboilerplate?dialect=org.hibernate.dialect.PostgreSQL9Dialect</referenceUrl>
+					<referenceUrl>hibernate:spring:com.nimbleways.merjane?dialect=org.hibernate.dialect.PostgreSQL9Dialect</referenceUrl>
 					<promptOnNonLocalDatabase>${liquibase.config.promptOnNonLocalDatabase}</promptOnNonLocalDatabase>
 				</configuration>
 				<!-- required in order for liquibase to run correctly -->
