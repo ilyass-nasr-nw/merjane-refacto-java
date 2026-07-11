@@ -57,6 +57,20 @@ public class MyControllerIntegrationTests {
                 assertEquals(resultOrder.getId(), order.getId());
         }
 
+    /*@Test
+    public void processOrderNormalProductWithStockDecrementsAvailable() throws Exception {
+        Product usbCable = new Product(null, 15, 30, "NORMAL", "USB Cable", null, null, null);
+        productRepository.save(usbCable);
+        Order order = createOrder(new HashSet<>(Set.of(usbCable)));
+
+        mockMvc.perform(post("/orders/{orderId}/processOrder", order.getId())
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        Product result = productRepository.findFirstByName("USB Cable").get();
+        assertEquals(Integer.valueOf(29), result.getAvailable());
+    }*/
+
         private static Order createOrder(Set<Product> products) {
                 Order order = new Order();
                 order.setItems(products);
