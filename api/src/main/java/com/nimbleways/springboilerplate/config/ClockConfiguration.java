@@ -8,10 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ClockConfiguration {
 
-    /**
-     * Injected everywhere instead of calling LocalDate.now() directly, so that the
-     * season and expiry rules can be tested on exact dates.
-     */
+    // Injected rather than calling LocalDate.now() directly, so the season and
+    // expiry rules can be tested on fixed dates.
     @Bean
     public Clock clock() {
         return Clock.systemDefaultZone();

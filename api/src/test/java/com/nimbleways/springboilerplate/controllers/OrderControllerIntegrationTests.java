@@ -8,7 +8,6 @@ import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,13 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Walks a basket containing one product per business case through the real
- * endpoint and checks what ended up in the database.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
-class MyControllerIntegrationTests {
+class OrderControllerIntegrationTests {
 
     private static final LocalDate TODAY = LocalDate.now();
 
@@ -56,7 +51,6 @@ class MyControllerIntegrationTests {
     }
 
     @Test
-    @DisplayName("processing an order applies the right rule to every product of the basket")
     void processOrderAppliesTheRuleOfEachProductType() throws Exception {
         List<Product> basket = List.of(
                 availableNormalProduct(),
@@ -96,6 +90,12 @@ class MyControllerIntegrationTests {
         verify(notificationService).sendOutOfStockNotification("Pumpkin");
         assertThat(stockOf("Strawberry")).isZero();
         verify(notificationService).sendDelayNotification(5, "Strawberry");
+    }
+
+    @Test
+    void unknownOrderIsRejected() throws Exception {
+        mockMvc.perform(post("/orders/{orderId}/processOrder", 404_000L))
+                .andExpect(status().isNotFound());
     }
 
     private Order saveOrderContaining(List<Product> products) {
