@@ -18,6 +18,8 @@ import static org.junit.Assert.assertEquals;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,6 +57,16 @@ public class MyControllerIntegrationTests {
                                 .andExpect(status().isOk());
                 Order resultOrder = orderRepository.findById(order.getId()).get();
                 assertEquals(resultOrder.getId(), order.getId());
+                assertEquals(29, productRepository.findById(allProducts.get(0).getId()).get().getAvailable().intValue());
+                assertEquals(0, productRepository.findById(allProducts.get(1).getId()).get().getAvailable().intValue());
+                assertEquals(29, productRepository.findById(allProducts.get(2).getId()).get().getAvailable().intValue());
+                assertEquals(0, productRepository.findById(allProducts.get(3).getId()).get().getAvailable().intValue());
+                assertEquals(29, productRepository.findById(allProducts.get(4).getId()).get().getAvailable().intValue());
+                assertEquals(30, productRepository.findById(allProducts.get(5).getId()).get().getAvailable().intValue());
+                verify(notificationService).sendDelayNotification(10, "USB Dongle");
+                verify(notificationService).sendExpirationNotification("Milk", allProducts.get(3).getExpiryDate());
+                verify(notificationService).sendOutOfStockNotification("Grapes");
+                verifyNoMoreInteractions(notificationService);
         }
 
         private static Order createOrder(Set<Product> products) {
